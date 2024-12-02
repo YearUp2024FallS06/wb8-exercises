@@ -16,47 +16,68 @@ public class Main {
         String username = args[0];
         String password = args[1];
 
+
+        try {
+            doDatabaseStuff(username, password);
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void doDatabaseStuff(String username, String password) throws SQLException {
+
+        Connection connection = null;
+        PreparedStatement pStatement = null;
+        ResultSet results = null;
+
         try{
 
-           // load the MySQL Driver
-           Class.forName("com.mysql.cj.jdbc.Driver");
+            // load the MySQL Driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
 
             // 1. open a connection to the database
             // use the database URL to point to the correct database
-           Connection connection;
-
-           connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila", username, password);
-
-           int country_id = 103;
-
-           PreparedStatement pStatement = connection.prepareStatement("SELECT * FROM sakila.city WHERE country_id = ?;");
-           pStatement.setInt(1, country_id);
 
 
-           ResultSet results = pStatement.executeQuery();
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila", username, password);
+
+            int country_id = 103;
+
+            pStatement = connection.prepareStatement("SELECT * FROM sakila.city WHERE country_id = ?;");
+            pStatement.setInt(1, country_id);
+
+
+            results = pStatement.executeQuery();
             // process the results
-           while (results.next()) {
-               int cityId = results.getInt("city_id");
-               String city = results.getString("city");
-               System.out.println(cityId);
-               System.out.println(city);
+            while (results.next()) {
+                int cityId = results.getInt("city_id");
+                String city = results.getString("city");
+                System.out.println(cityId);
+                System.out.println(city);
 
-           }
-            // 3. Close the connection
-           results.close();
-           pStatement.close();
-           connection.close();
+            }
 
-       } catch (ClassNotFoundException e) {
-           System.out.println("There was an issue finding a class:");
-           e.printStackTrace();
-       }
-       catch (SQLException e) {
-           System.out.println("There was an SQL issue:");
-           e.printStackTrace();
-       }
 
+        } catch (ClassNotFoundException e) {
+            System.out.println("There was an issue finding a class:");
+            e.printStackTrace();
+        }
+        catch (SQLException e) {
+            System.out.println("There was an SQL issue:");
+            e.printStackTrace();
+        }
+        finally {
+
+            if(results != null) { results.close();}
+            if(pStatement != null) {pStatement.close();}
+            if(connection != null) { connection.close();}
+
+
+        }
 
 
     }
+
 }
