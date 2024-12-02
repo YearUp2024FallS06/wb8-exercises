@@ -20,9 +20,11 @@ public class Main {
                    "root",
                    "yearup");
 
+           int country_id = 103;
 
-           PreparedStatement pStatement = connection.prepareStatement("SELECT * FROM sakila.city WHERE country_id = 103;");
-           
+           PreparedStatement pStatement = connection.prepareStatement("SELECT * FROM sakila.city WHERE country_id = ?;");
+           pStatement.setInt(1, country_id);
+
 
            ResultSet results = pStatement.executeQuery();
             // process the results
