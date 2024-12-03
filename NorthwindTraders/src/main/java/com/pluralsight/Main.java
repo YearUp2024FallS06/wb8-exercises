@@ -36,10 +36,18 @@ public class Main {
             // 2. Execute your query
             ResultSet results = statement.executeQuery(query);
 
+            displayProductsHeader();
             // process the results
             while (results.next()) {
-                String productName = results.getString("ProductName");
-                System.out.println(productName);
+
+                displayProductsRow(
+                        results.getInt(1),
+                        results.getString(2),
+                        results.getDouble(3),
+                        results.getInt(4)
+                );
+
+
             }
 
             // 3. Close the connection
@@ -54,4 +62,15 @@ public class Main {
 
 
     }
+
+
+    public static void displayProductsHeader(){
+        System.out.printf("%-10s %-40s %-10s %-10s \n", "Id", "Name", "Price", "Stock");
+    }
+
+    public static void displayProductsRow(int productId, String productName, double productPrice, int productUnitsOnHand ){
+        System.out.printf("%10d %-40s %10.2f %10d \n", productId, productName, productPrice, productUnitsOnHand);
+    }
+
+
 }
