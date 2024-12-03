@@ -32,9 +32,7 @@ public class Main {
 
     public static void doDatabaseStuff(String username, String password, String sqlServerAddress) throws SQLException, ClassNotFoundException {
 
-        Connection connection = null;
-        PreparedStatement pStatement = null;
-        ResultSet results = null;
+
         try{
 
             // load the MySQL Driver
@@ -43,20 +41,26 @@ public class Main {
             // 1. open a connection to the database
             // use the database URL to point to the correct database
 
-            connection = DriverManager.getConnection(sqlServerAddress, username, password);
+            try (
+                    Connection connection = DriverManager.getConnection(sqlServerAddress, username, password);
+                    PreparedStatement pStatement = connection.prepareStatement("SELECT * FROM sakila.city WHERE country_id = ?;");
+            )
+            {
 
-            int country_id = 103;
+                int country_id = 103;
 
-            pStatement = connection.prepareStatement("SELECT * FROM sakila.city WHERE country_id = ?;");
-            pStatement.setInt(1, country_id);
+                pStatement.setInt(1, country_id);
 
-            results = pStatement.executeQuery();
-            // process the results
-            while (results.next()) {
-                int cityId = results.getInt("city_id");
-                String city = results.getString("city");
-                System.out.println(cityId);
-                System.out.println(city);
+                try(ResultSet results = pStatement.executeQuery();){
+
+                    // process the results
+                    while (results.next()) {
+                        int cityId = results.getInt("city_id");
+                        String city = results.getString("city");
+                        System.out.println(cityId);
+                        System.out.println(city);
+                    }
+                }
 
             }
 
@@ -69,13 +73,6 @@ public class Main {
             log(username);
             log(e);
             throw(e);
-        }
-
-   finally {
-            System.out.println("Cleaning up database objects in finally...");
-            if(results != null) { results.close();}
-            if(pStatement != null) {pStatement.close();}
-            if(connection != null) { connection.close();}
         }
 
 
